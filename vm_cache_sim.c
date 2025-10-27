@@ -84,13 +84,12 @@ void parse_args(int argc, char **argv, Config *cfg){
         }
 
         else if (strcmp(argv[i], "-b") == 0 && i + 1 < argc) {
-            cfg->cache_kb = atoi(argv[++i]);
+            cfg->block_size = atoi(argv[++i]);
         }
 
         else if (strcmp(argv[i], "-a") == 0 && i + 1 < argc) {
             cfg -> associativity = atoi(argv[++i]);
         }
-
         // Replacement policy
         else if (strcmp(argv[i], "-r") == 0 && i + 1 < argc) {
             strncpy(cfg->replacement, argv[++i], sizeof(cfg->replacement) - 1);
