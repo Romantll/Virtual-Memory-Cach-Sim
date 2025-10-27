@@ -54,9 +54,74 @@ int main(int argc, char **argv){
 
 // FUNCTION DEFS
 
-//Parsing the command line args
+//Stores into config struct then checks for errors
 void parse_args(int argc, char **argv, Config *cfg){
-    // TODO: Fill in the logic for parsing
+
+    if (argc == 1){
+        usage(argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    cfg->cache_kb = 0;
+    cfg->block_size = 0;
+    cfg->associativity = 0;
+    strcpy(cfg->replacement, "");
+    cfg->physical_memory_mb = 0;
+    cfg->os_used_percentage = -1.0;
+    cfg->time_slice = -2;
+    cfg->trace_count = 0;
+
+    for(int i = 1; i < argc; ++i){
+
+        // Shows the help screen :D
+        if (strcmp(argv[i], "--help") == 0) {
+            usage(argv[0]);
+            exit(EXIT_SUCCESS);
+        } 
+        //Cache Size
+        else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc) {
+            cfg->cache_kb = atoi(argv[++i]);
+        }
+
+        else if (strcmp(argv[i], "-b") == 0 && i + 1 < argc) {
+            cfg->cache_kb = atoi(argv[++i]);
+        }
+
+        else if (strcmp(argv[i], "-a") == 0 && i + 1 < argc) {
+            cfg -> associativity = atoi(argv[++i]);
+        }
+
+        // Replacement policy
+        else if (strcmp(argv[i], "-r") == 0 && i + 1 < argc) {
+            strncpy(cfg->replacement, argv[++i], sizeof(cfg->replacement) - 1);
+            cfg->replacement[sizeof(cfg->replacement) - 1] = '\0';
+        }
+        // Physical memory (MB)
+        else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
+            cfg->physical_memory_mb = atoi(argv[++i]);
+        }
+        // OS memory percent
+        else if (strcmp(argv[i], "-u") == 0 && i + 1 < argc) {
+            cfg->os_used_percentage = atof(argv[++i]);
+        }
+        // Time slice
+        else if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
+            cfg->time_slice = atoll(argv[++i]);
+        }
+        // Trace file(s)
+        else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) {
+            if (cfg->trace_count < 3)
+                cfg->trace_files[cfg->trace_count++] = argv[++i];
+            else
+                fprintf(stderr, "Warning: Ignoring extra -f file beyond 3.\n");
+        }
+        // Invalid argument
+        else {
+            fprintf(stderr, "Error: Unknown or incomplete argument: %s\n", argv[i]);
+            usage(argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
 }
 
 // Computing values
